@@ -81,7 +81,7 @@ function M.disableAutosave()
 end
 
 -- Enables autosave.
----@param opts? { force? : boolean } whether to overwrite a conflicing session
+---@param opts? { force? : boolean } whether to overwrite a conflicting session
 function M.enableAutosave(opts)
   opts = vim.tbl_extend('keep', opts or {}, { force = false })
 
