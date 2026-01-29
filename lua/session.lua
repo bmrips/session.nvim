@@ -21,10 +21,18 @@ local argumentsWereGiven = vim.fn.argc(-1) ~= 0
 local autosaveEnabled = false
 local readFromStdin = false
 
-local function notify(message)
-  vim.notify(message, vim.log.levels.INFO, {
-    title = 'Session',
-  })
+local function notify(message, log_level)
+  log_level = log_level or vim.log.levels.INFO
+  vim.notify(message, log_level, { title = 'Session' })
+end
+
+local function callOrNotify(...)
+  local ok, msg = pcall(...)
+  if ok then
+    return
+  end
+  msg = msg:match 'E%d*:.+' or msg -- capture the Nvim error only
+  notify(msg, vim.log.levels.ERROR)
 end
 
 -- Checks whether a session file exists in the current directory.
@@ -46,11 +54,7 @@ function M.load()
     return false
   end
 
-  local ok, msg = pcall(vim.cmd.source, config.filename)
-  if not ok then
-    msg = msg:match 'E%d*:.+' or msg
-    vim.notify(msg, vim.log.levels.ERROR)
-  end
+  callOrNotify(vim.cmd.source, config.filename)
 
   if config.notifyWhen.sessionLoaded then
     notify 'loaded'
@@ -66,14 +70,10 @@ end
 
 -- Saves the current session into the session file.
 function M.save()
-  local ok, msg = pcall(vim.cmd.mksession, {
+  callOrNotify(vim.cmd.mksession, {
     bang = true,
     args = { config.filename },
   })
-  if not ok then
-    msg = msg:match 'E%d*:.+' or msg
-    vim.notify(msg, vim.log.levels.ERROR)
-  end
 end
 
 -- Disables autosave.
