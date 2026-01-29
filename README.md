@@ -31,8 +31,7 @@ The plugin can be configured through the setup function:
 require('session').setup {
   filename = 'Session.vim',
   notifyWhen = {
-    autosaveDisabled = true,
-    autosaveEnabled = true,
+    autosaveToggled = true,
     conflictingSession = true,
     sessionLoaded = true,
   },

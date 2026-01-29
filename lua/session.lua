@@ -5,8 +5,7 @@ local M = {}
 local config = {
   filename = 'Session.vim',
   notifyWhen = {
-    autosaveDisabled = true,
-    autosaveEnabled = true,
+    autosaveToggled = true,
     conflictingSession = true,
     sessionLoaded = true,
   },
@@ -75,7 +74,7 @@ end
 function M.disableAutosave()
   autosaveEnabled = false
   M.delete()
-  if config.notifyWhen.autosaveDisabled then
+  if config.notifyWhen.autosaveToggled then
     notify 'deleted & autosave disabled'
   end
 end
@@ -98,7 +97,7 @@ function M.enableAutosave(opts)
   else
     autosaveEnabled = true
     M.save()
-    if config.notifyWhen.autosaveEnabled then
+    if config.notifyWhen.autosaveToggled then
       notify 'saved & autosave enabled'
     end
   end
