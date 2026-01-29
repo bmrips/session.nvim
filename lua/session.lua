@@ -61,7 +61,10 @@ end
 
 -- Saves the current session into the session file.
 function M.save()
-  local ok, msg = pcall(vim.cmd.mksession, { bang = true, config.filename })
+  local ok, msg = pcall(vim.cmd.mksession, {
+    bang = true,
+    args = { config.filename },
+  })
   if not ok then
     msg = msg:match 'E%d*:.+' or msg
     vim.notify(msg, vim.log.levels.ERROR)
