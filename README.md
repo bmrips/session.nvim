@@ -16,7 +16,7 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 return {
-  "f1rstlady/session",
+  'f1rstlady/session',
   lazy = false,
 }
 ```
