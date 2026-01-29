@@ -132,7 +132,7 @@ function M.setup(opts)
       if readFromStdin or argumentsWereGiven then
         return
       end
-      _, autosaveEnabled = pcall(M.load)
+      autosaveEnabled = M.load()
     end,
   })
 
