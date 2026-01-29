@@ -1,7 +1,13 @@
 local M = {}
 
+---@class session.notification.Config
+---@field autosaveToggled boolean When the autosave setting changes
+---@field conflictingSession boolean When autosave is not enabled due to a conflicting session
+---@field sessionLoaded boolean When a session is loaded at startup
+
 ---@class session.Config
----@field filename string
+---@field filename string The session filename
+---@field notifyWhen session.notification.Config
 local config = {
   filename = 'Session.vim',
   notifyWhen = {
@@ -22,7 +28,7 @@ local function notify(message)
 end
 
 -- Checks whether a session file exists in the current directory.
----@return boolean
+---@return boolean doesExist Whether a session exists
 function M.exists()
   local f = io.open(config.filename, 'r')
   if f ~= nil then
@@ -34,7 +40,7 @@ function M.exists()
 end
 
 -- Sources the session file it it exists.
----@return boolean didLoad
+---@return boolean didLoad Whether a session was loaded
 function M.load()
   if not M.exists() then
     return false
@@ -112,6 +118,7 @@ function M.toggleAutosave()
   end
 end
 
+---@param opts session.Config
 function M.setup(opts)
   config = vim.tbl_deep_extend('force', config, opts or {})
 

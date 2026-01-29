@@ -18,17 +18,19 @@ With [lazy.nvim](https://github.com/folke/lazy.nvim):
 return {
   "f1rstlady/session",
   lazy = false,
+  ---@module 'session'
+  ---@type session.Config
   opts = {},
 }
 ```
 
 ## Configuration
 
-The plugin can be configured through the setup function:
+The plugin can be configured through the following options (showing the defaults here):
 
 ```lua
--- default options
-require('session').setup {
+---@type session.Config
+local defaults = {
   filename = 'Session.vim',
   notifyWhen = {
     autosaveToggled = true,
