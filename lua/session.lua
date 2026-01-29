@@ -17,9 +17,7 @@ local config = {
   },
 }
 
-local argumentsWereGiven = vim.fn.argc(-1) ~= 0
-local autosaveEnabled = false
-local readFromStdin = false
+M.autosaveEnabled = false
 
 local function notify(message, log_level)
   log_level = log_level or vim.log.levels.INFO
@@ -31,6 +29,7 @@ local function callOrNotify(...)
   if ok then
     return
   end
+  ---@diagnostic disable-next-line: param-type-mismatch, need-check-nil
   msg = msg:match 'E%d*:.+' or msg -- capture the Nvim error only
   notify(msg, vim.log.levels.ERROR)
 end
@@ -78,7 +77,7 @@ end
 
 -- Disables autosave.
 function M.disableAutosave()
-  autosaveEnabled = false
+  M.autosaveEnabled = false
   M.delete()
   if config.notifyWhen.autosaveToggled then
     notify 'deleted & autosave disabled'
@@ -101,7 +100,7 @@ function M.enableAutosave(opts)
       end
     end)
   else
-    autosaveEnabled = true
+    M.autosaveEnabled = true
     M.save()
     if config.notifyWhen.autosaveToggled then
       notify 'saved & autosave enabled'
@@ -111,7 +110,7 @@ end
 
 -- Toggles autosave.
 function M.toggleAutosave()
-  if autosaveEnabled then
+  if M.autosaveEnabled then
     M.disableAutosave()
   else
     M.enableAutosave()
@@ -121,48 +120,6 @@ end
 ---@param opts session.Config
 function M.setup(opts)
   config = vim.tbl_deep_extend('force', config, opts or {})
-
-  local augroup = vim.api.nvim_create_augroup('session', { clear = true })
-
-  vim.api.nvim_create_autocmd('VimEnter', {
-    group = augroup,
-    nested = true,
-    desc = 'If a session exists, load it',
-    callback = function()
-      if readFromStdin or argumentsWereGiven then
-        return
-      end
-      autosaveEnabled = M.load()
-    end,
-  })
-
-  vim.api.nvim_create_autocmd('VimLeave', {
-    group = augroup,
-    nested = true,
-    desc = 'Save a session if autosave is enabled',
-    callback = function()
-      if not autosaveEnabled then
-        return
-      end
-      M.save()
-    end,
-  })
-
-  vim.api.nvim_create_autocmd('StdinReadPost', {
-    group = augroup,
-    desc = 'Remember that stdin was read from',
-    callback = function()
-      readFromStdin = true
-    end,
-  })
-
-  vim.api.nvim_create_user_command('ToggleSessionAutosave', function()
-    M.toggleAutosave()
-  end, {
-    force = true,
-    bar = true,
-    desc = 'Toggle session autosaving',
-  })
 end
 
 return M
